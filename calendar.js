@@ -11,6 +11,7 @@
   const details = find("details");
   const feedback = find("feedback");
   const durationInput = find("duration");
+  const movesInput = find("moves");
   const lastResortInput = find("last-resort");
   const demoMode = root.hasAttribute("data-demo");
   const apiOrigin = root.dataset.apiOrigin;
@@ -36,6 +37,7 @@
     {label:"Занят", symbol:"×", cost:10}
   ];
   const statusOrder = [5,3,2,4,1,0];
+  const statusFilters = {2:movesInput, 3:lastResortInput};
   const dayHours = 24;
   const dates = Array.from({length:18}, (_, index) => {
     const number = 13 + index;
@@ -76,13 +78,11 @@
     const slots = people.map((_, person) => Array.from({length:duration}, (_, hour) =>
       statusAt(person, start + hour)));
     const answers = slots.map(hours => hours.reduce(worst, 1));
-    const hasMove = slots.some(hours => hours.includes(2));
-    const hasLastResort = slots.some(hours => hours.includes(3));
-    const busy = answers.includes(5);
+    const present = new Set(slots.flat());
     return {
-      start, duration, answers, tone: busy ? 5 : hasLastResort ? 3 : answers.reduce(worst, 1),
+      start, duration, answers, tone: statusOrder.find(status => present.has(status)) ?? 0,
       free: answers.filter(s => s === 1).length,
-      hasMove, hasLastResort, busy,
+      present, slots,
       pending: answers.filter(s => s === 0 || s === 4).length,
       cost: answers.reduce((sum, s) => sum + statuses[s].cost, 0)
     };
@@ -105,10 +105,11 @@
       mark + '</button>';
   }
 
-  function groupCount({answers, free}) {
-    return lastResortInput.checked
-      ? {number:free + answers.filter(status => status === 3).length, label:"могут"}
-      : {number:free, label:"свободны"};
+  function groupCount({slots}) {
+    return {
+      number:slots.filter(hours => hours.every(status => status === 1 || statusFilters[status]?.checked)).length,
+      label:movesInput.checked || lastResortInput.checked ? "могут" : "свободны"
+    };
   }
 
   function renderHours() {
@@ -143,21 +144,22 @@
     const visible = initialized && state.section === "group" && state.person === -1;
     if (!visible) return;
     const duration = Number(durationInput.value);
-    const includeMoves = find("moves").checked;
-    const includeLastResort = lastResortInput.checked;
     const includePending = find("pending").checked;
     const relevantDates = dates.slice(state.day, state.day + columnCount);
     const windows = relevantDates.flatMap((_, offset) => Array.from({length:dayHours - duration + 1},
       (_, hour) => summarize((state.day + offset) * dayHours + hour, duration)))
-      .filter(window => !window.busy && (includeMoves || !window.hasMove) &&
-        (includeLastResort || !window.hasLastResort) && (includePending || !window.pending))
+      .filter(window => !window.present.has(5) && (movesInput.checked || !window.present.has(2)) &&
+        (lastResortInput.checked || !window.present.has(3)) && (includePending || !window.pending))
       .sort((a, b) => a.pending - b.pending || b.free - a.free || a.cost - b.cost || a.start - b.start);
-    find("results").innerHTML = windows.length ? '<ul class="window-list">' + windows.slice(0, 5).map(window =>
-      '<li><button type="button" data-window="' + window.start + '"' +
-      (window.hasLastResort ? ' data-status="3"' : '') + ' aria-pressed="' +
-      (state.start === window.start && state.duration === duration) + '"><strong>' + timeLabel(window.start, duration) +
-      '</strong><span>Свободны ' + window.free + '/' + people.length +
-      (window.hasLastResort ? ' · Крайний случай' : '') + '</span></button></li>').join('') +
+    find("results").innerHTML = windows.length ? '<ul class="window-list">' + windows.slice(0, 5).map(window => {
+      const count = groupCount(window);
+      const label = count.label[0].toUpperCase() + count.label.slice(1);
+      const toneLabel = window.tone === 1 ? '' : ' · ' + statuses[window.tone].label;
+      return '<li><button type="button" data-window="' + window.start + '" data-status="' + window.tone +
+        '" aria-pressed="' + (state.start === window.start && state.duration === duration) + '"><strong>' +
+        timeLabel(window.start, duration) + '</strong><span>' + label + ' ' + count.number + '/' + people.length +
+        toneLabel + '</span></button></li>';
+    }).join('') +
       '</ul><p class="feedback">Подходящих окон — ' + windows.length + '</p>' :
       '<p class="feedback">На выбранные даты подходящих окон нет.</p>';
   }
@@ -449,10 +451,12 @@
     drag = null;
     hoursPane.querySelectorAll("[data-preview]").forEach(button => button.removeAttribute("data-preview"));
   });
-  windowsPane.addEventListener("change", renderWindows);
-  lastResortInput.addEventListener("change", () => {
-    renderHours();
-    renderDetails();
+  windowsPane.addEventListener("change", event => {
+    if (event.target === movesInput || event.target === lastResortInput) {
+      renderHours();
+      renderDetails();
+    }
+    renderWindows();
   });
   async function refreshMarks() {
     try {
