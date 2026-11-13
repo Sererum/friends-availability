@@ -1,0 +1,105 @@
+#november-calendars {
+  color-scheme: light;
+  --ink: #2b3445;
+  --subtle: #556071;
+  --line: #dce2e9;
+  --accent: #554487;
+  --lilac: #ebe4fa;
+  --free: #d9f1e5;
+  --move: #f8ebc6;
+  --last: #f9e1ce;
+  --unsure: #e9e1f7;
+  --busy: #f6dce5;
+  --paper: #fff;
+  color: var(--ink);
+  font: 15px/1.4 "DM Sans", system-ui, sans-serif;
+}
+#november-calendars *, #november-calendars *::before, #november-calendars *::after { box-sizing: border-box; }
+#november-calendars [hidden] { display: none !important; }
+#november-calendars h2, #november-calendars h3, #november-calendars p { margin: 0; }
+#november-calendars h2 { font-size: clamp(24px, 4vw, 33px); letter-spacing: -.035em; }
+#november-calendars h3 { font-size: 18px; }
+#november-calendars button, #november-calendars select { color: inherit; font: inherit; }
+#november-calendars button { min-height: 40px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); padding: 6px 10px; }
+#november-calendars button:enabled:hover { border-color: var(--accent); }
+#november-calendars button[aria-pressed="true"], #november-calendars button[aria-current="date"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); color: var(--accent); }
+#november-calendars :is(button,input,select):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+#november-calendars .tabs, #november-calendars .people, #november-calendars .tools, #november-calendars .filters, #november-calendars .answers { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+#november-calendars .tabs button[aria-pressed="true"], #november-calendars .people button[aria-pressed="true"] { background: var(--lilac); }
+#november-calendars .planner { background: #f7f8fc; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+#november-calendars .top { padding: 16px clamp(10px, 3vw, 22px); background: #f1ebfa; border-bottom: 1px solid var(--line); }
+#november-calendars .top p, #november-calendars .calendar-heading > span, #november-calendars .feedback { color: var(--subtle); font-size: 13px; }
+#november-calendars .tabs { margin-top: 10px; }
+#november-calendars .tabs button { font-weight: 650; }
+#november-calendars .body { padding: 14px clamp(10px, 3vw, 22px) 18px; }
+#november-calendars .calendar-owner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 14px; margin-bottom: 12px; }
+#november-calendars .calendar-owner h3 { font-size: clamp(21px, 4vw, 28px); letter-spacing: -.025em; }
+#november-calendars .people button { min-height: 44px; padding-inline: 12px; font-size: 16px; font-weight: 650; }
+#november-calendars .date-nav { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; gap: 7px; align-items: start; }
+#november-calendars .date-nav > button { padding: 0; font-size: 25px; }
+#november-calendars .date-nav > button:disabled { opacity: .48; }
+#november-calendars .date-strip { display: flex; gap: 5px; overflow-x: auto; padding: 2px 2px 7px; scrollbar-color: #9f8dc1 #eae5f3; scrollbar-width: thin; }
+#november-calendars .date-strip button { flex: 0 0 51px; min-height: 48px; padding: 3px; }
+#november-calendars .date-strip span { display: block; color: var(--subtle); font-size: 12px; }
+#november-calendars .date-strip strong { display: block; font-size: 18px; }
+#november-calendars .date-strip [data-weekend] { background: #fbf0e9; }
+#november-calendars .date-strip [aria-current="date"] { background: var(--lilac); }
+#november-calendars .tools { margin: 9px 0; min-height: 34px; }
+#november-calendars .tools button { min-height: 36px; font-size: 13px; }
+#november-calendars .tools span, #november-calendars .answers span { border: 1px solid var(--line); border-radius: 8px; padding: 3px 7px; font-size: 13px; }
+#november-calendars [data-status="1"] { --tone: var(--free); }
+#november-calendars [data-status="2"] { --tone: var(--move); }
+#november-calendars [data-status="3"] { --tone: var(--last); }
+#november-calendars [data-status="4"] { --tone: var(--unsure); }
+#november-calendars [data-status="5"] { --tone: var(--busy); }
+#november-calendars [data-status] { background: var(--tone, var(--paper)); }
+#november-calendars .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+#november-calendars .calendar, #november-calendars .windows { min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 13px; }
+#november-calendars .calendar-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 3px 8px; padding: 9px 10px; }
+#november-calendars .hours { max-height: 386px; overflow-y: auto; overscroll-behavior-y: auto; scrollbar-color: #a594c5 #eee9f5; scrollbar-width: thin; }
+#november-calendars .hour-grid { display: grid; grid-template-columns: 48px repeat(var(--columns), minmax(0, 1fr)); gap: 4px; padding: 0 7px 8px; }
+#november-calendars [data-columns="1"] { --columns: 1; }
+#november-calendars [data-columns="2"] { --columns: 2; }
+#november-calendars [data-columns="3"] { --columns: 3; }
+#november-calendars [data-columns="4"] { --columns: 4; }
+#november-calendars [data-columns="5"] { --columns: 5; }
+#november-calendars .grid-label { padding: 5px 1px; background: var(--paper); font-size: 13px; text-align: center; }
+#november-calendars .grid-label { position: sticky; top: 0; z-index: 1; }
+#november-calendars .hour-label { align-self: center; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--subtle); }
+#november-calendars .hours button { min-height: 34px; padding: 4px 2px; font-variant-numeric: tabular-nums; }
+#november-calendars .hours [data-preview] { box-shadow: inset 0 0 0 2px var(--accent); }
+#november-calendars [data-edit] { user-select: none; }
+#november-calendars .windows { padding: 0 9px 9px; }
+#november-calendars .windows .calendar-heading { padding-inline: 0; }
+#november-calendars .windows label { font-size: 13px; }
+#november-calendars .windows select { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4px; }
+#november-calendars .filters { gap: 5px 11px; margin-bottom: 7px; }
+#november-calendars input { accent-color: var(--accent); }
+#november-calendars .window-list { display: grid; gap: 5px; list-style: none; padding: 0; margin: 0; }
+#november-calendars .window-list button { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; text-align: left; gap: 2px 5px; background: #f6f2fc; }
+#november-calendars .window-list button span { color: var(--subtle); font-size: 13px; }
+#november-calendars .details:not(:empty), #november-calendars .feedback:not(:empty) { margin-top: 10px; }
+#november-calendars .answers { margin-top: 5px; }
+@media (min-width: 690px) {
+}
+@media (max-width: 460px) {
+  #november-calendars .date-nav { grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 3px; }
+  #november-calendars .hour-grid { grid-template-columns: 40px repeat(var(--columns), minmax(0, 1fr)); gap: 3px; }
+  #november-calendars .grid-label { font-size: 12px; }
+}
+@media (pointer: coarse) {
+  #november-calendars button, #november-calendars .tools button, #november-calendars .hours button { min-height: 44px; }
+}
+
+body:has(#november-calendars) { margin: 12px auto; max-width: 1040px; padding: 0 8px; }
+#november-calendars .identity { padding: 10px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 12px; background: #f0ebf9; }
+#november-calendars .identity h3 { margin-bottom: 7px; }
+#november-calendars .identity form { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: end; gap: 7px; }
+#november-calendars .identity label { display: grid; gap: 3px; }
+#november-calendars .identity input { max-width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: 7px; font: inherit; }
+#november-calendars .quick-hours { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 5px; }
+#november-calendars .quick-hours button { min-height: 32px; font-size: 13px; }
+#november-calendars .quick-hours span { color: var(--subtle); font-size: 13px; margin-inline-start: 4px; }
+@media (min-width: 760px) {
+  #november-calendars [data-section-mode="group"] .workspace { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+}
