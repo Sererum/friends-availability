@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Когда встречаемся?</title>
+<link rel="stylesheet" href="./calendar.css">
+<script src="./calendar.js" defer></script>
+</head>
+<body>
+<div id="november-calendars" data-api-origin="https://friends-november-calendar.mildcrest2.chatgpt.site" lang="ru">
+  <div class="planner">
+    <header class="top">
+    <p>13–30 ноября 2026 · МСК</p>
+      <h2>Когда встречаемся?</h2>
+      <div class="tabs" role="group" aria-label="Раздел календаря">
+        <button type="button" data-section="mine" aria-pressed="true">Мой календарь</button>
+        <button type="button" data-section="group" aria-pressed="false">Общий календарь</button>
+      </div>
+    </header>
+    <div class="body">
+      <div class="identity">
+        <h3>Кто отмечает занятость?</h3>
+        <div class="people" data-identity role="group" aria-label="Кто отмечает занятость"></div>
+        <form data-signin hidden>
+          <label>Код приглашения <input name="code" required autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+          <button type="submit">Открыть свой календарь</button>
+        </form>
+        <button type="button" data-signout hidden>Выйти</button>
+        <p data-session-note class="feedback" aria-live="polite"></p>
+      </div>
+      <div class="calendar-owner">
+        <h3 data-owner>Мой календарь</h3>
+        <div class="people" data-people role="group" aria-label="Чей календарь показать" hidden></div>
+      </div>
+      <div class="date-nav" data-date-controls>
+        <button type="button" data-step="-1" aria-label="Предыдущий день">‹</button>
+        <div class="date-strip" data-dates role="group" aria-label="Даты с 13 по 30 ноября"></div>
+        <button type="button" data-step="1" aria-label="Следующий день">›</button>
+      </div>
+      <div class="quick-hours" data-quick-hours role="group" aria-label="Перейти к часу">
+        <button type="button" data-jump="0">00:00</button><button type="button" data-jump="12">12:00</button><button type="button" data-jump="18">18:00</button>
+        <span>По умолчанию 23:00–10:00 — занято</span>
+      </div>
+      <div class="tools" data-tools role="group" aria-label="Статусы"></div>
+      <div class="workspace">
+        <div class="calendar">
+          <div class="calendar-heading"><h3 data-period></h3><span>00:00–24:00</span></div>
+          <div class="hours" data-hours></div>
+        </div>
+        <div class="windows" data-windows hidden>
+          <div class="calendar-heading"><h3>Лучшие окна</h3>
+            <label>Длительность <select data-duration><option value="1">1 ч</option><option value="2" selected>2 ч</option><option value="3">3 ч</option></select></label>
+          </div>
+          <div class="filters">
+            <label><input type="checkbox" data-moves checked> С переносами</label>
+            <label><input type="checkbox" data-pending> С неопределённостью</label>
+          </div>
+          <div data-results></div>
+        </div>
+      </div>
+      <div class="details" data-details aria-live="polite"></div>
+      <p class="feedback" data-feedback aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
