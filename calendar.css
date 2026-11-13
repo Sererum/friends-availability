@@ -70,7 +70,7 @@
 #november-calendars .filters { gap: 5px 11px; margin-bottom: 7px; }
 #november-calendars input { accent-color: var(--accent); }
 #november-calendars .window-list { display: grid; gap: 5px; list-style: none; padding: 0; margin: 0; }
-#november-calendars .window-list button { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; text-align: left; gap: 2px 5px; background: #f6f2fc; }
+#november-calendars .window-list button { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; text-align: left; gap: 2px 5px; background: var(--tone, #f6f2fc); }
 #november-calendars .window-list button span { color: var(--subtle); font-size: 13px; }
 #november-calendars .details:not(:empty) { margin-bottom: 10px; }
 #november-calendars .feedback:not(:empty) { margin-top: 10px; }
