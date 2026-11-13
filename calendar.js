@@ -1,9 +1,9 @@
 (() => {
   const root = document.getElementById("november-calendars");
   const find = key => root.querySelector("[data-" + key + "]");
-  const planner = root.querySelector(".planner");
   const dateStrip = find("dates");
   const hoursPane = find("hours");
+  const calendar = hoursPane.closest(".calendar");
   const owner = find("owner");
   const peoplePicker = find("people");
   const tools = find("tools");
@@ -15,7 +15,7 @@
   const apiOrigin = root.dataset.apiOrigin;
   const sessionKey = "friends-calendar-november-session";
   let apiToken = apiOrigin ? sessionStorage.getItem(sessionKey) : null;
-  const desktop = window.matchMedia("(min-width: 760px)");
+  const mobile = window.matchMedia("(max-width: 599px)");
   const demoPeople = ["Глеб", "Алиса", "Соня", "Кристина", "Лиза", "Даша"];
   let people = demoMode ? demoPeople : [];
   let marks = demoMode ? demoPeople.map(() => []) : [];
@@ -41,7 +41,11 @@
     const weekday = (5 + index) % 7;
     return {number, weekday: ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"][weekday], weekend: weekday === 0 || weekday === 6};
   });
-  const visibleDays = () => desktop.matches ? 5 : 1;
+  let columnCount = 1;
+  function fittingDays() {
+    const fits = Math.floor((hoursPane.clientWidth - 64) / 128);
+    return mobile.matches ? 1 : Math.min(dates.length, Math.max(1, fits));
+  }
   const state = {section:"mine", person:-1, day:0, brush:1, start:10, duration:1, range:false, anchor:null};
   function statusAt(person, index) {
     const hour = index % dayHours;
@@ -100,39 +104,37 @@
     if (!initialized || (state.section === "mine" && viewer < 0)) {
       hoursPane.innerHTML = "";
       find("period").textContent = "";
-      hoursPane.closest(".calendar").hidden = true;
+      calendar.hidden = true;
       return;
     }
-    hoursPane.closest(".calendar").hidden = false;
+    calendar.hidden = false;
+    columnCount = fittingDays();
     const person = state.section === "mine" ? viewer : state.person;
-    const previousScroll = hoursPane.scrollTop;
-    const columns = dates.slice(state.day, state.day + visibleDays());
+    const columns = dates.slice(state.day, state.day + columnCount);
     const title = columns.length === 1 ? dateLabel(state.day) :
       columns[0].number + "–" + columns.at(-1).number + " ноября";
-    hoursPane.innerHTML = '<div class="hour-grid" data-columns="' + columns.length + '">' +
+    hoursPane.innerHTML = '<div class="hour-grid">' +
       '<span class="grid-label"></span>' +
       columns.map(date => '<strong class="grid-label">' + date.weekday + ' ' + date.number + '</strong>').join('') +
       Array.from({length:dayHours}, (_, hour) => '<span class="hour-label" data-hour-row="' + hour +
         '">' + clock(hour) + '</span>' + columns.map((_, day) => cell((state.day + day) * dayHours + hour, person)).join('')).join('') +
       '</div>';
     find("period").textContent = title;
-    hoursPane.scrollTop = previousScroll;
+    hoursPane.firstElementChild.style.setProperty("--columns", columns.length);
   }
 
   function scrollToHour(hour) {
     const row = hoursPane.querySelector('[data-hour-row="' + hour + '"]');
-    if (!row) return;
-    hoursPane.scrollTop = hoursPane.scrollTop + row.getBoundingClientRect().top - hoursPane.getBoundingClientRect().top - 30;
+    row?.scrollIntoView({block:"start"});
   }
 
   function renderWindows() {
     const visible = initialized && state.section === "group" && state.person === -1;
-    windowsPane.hidden = !visible;
     if (!visible) return;
     const duration = Number(durationInput.value);
     const includeMoves = find("moves").checked;
     const includePending = find("pending").checked;
-    const relevantDates = dates.slice(state.day, state.day + visibleDays());
+    const relevantDates = dates.slice(state.day, state.day + columnCount);
     const windows = relevantDates.flatMap((_, offset) => Array.from({length:dayHours - duration + 1},
       (_, hour) => summarize((state.day + offset) * dayHours + hour, duration)))
       .filter(window => !window.busy && (includeMoves || !window.moves) && (includePending || !window.pending))
@@ -185,7 +187,6 @@
   }
 
   function render() {
-    planner.dataset.sectionMode = state.section;
     for (const button of root.querySelectorAll("[data-section], [data-person], [data-identity-option]")) {
       const {section, person, identityOption} = button.dataset;
       const selected = section !== undefined ? section === state.section :
@@ -203,6 +204,7 @@
       state.person === -1 ? "Все участники" : "Календарь · " + people[state.person];
     updateDates();
     renderTools();
+    windowsPane.hidden = !initialized || state.section !== "group" || state.person !== -1;
     renderHours();
     renderWindows();
     renderDetails();
@@ -301,7 +303,6 @@
       sessionNote.textContent = viewer < 0 ? "Выберите своё имя и введите код приглашения." : "Вы отмечаете как " + people[viewer] + ".";
       renderPeople();
       render();
-      scrollToHour(10);
     } catch (error) {
       sessionNote.textContent = "Календарь не загрузился. Обновите страницу.";
     }
@@ -329,7 +330,6 @@
     } finally {
       signingIn = false;
       render();
-      scrollToHour(10);
     }
   });
 
@@ -351,7 +351,6 @@
       feedback.textContent = "";
       render();
       if (!demoMode) signin.elements.code.focus();
-      else scrollToHour(10);
     } else if ("signout" in d) {
       if (!saving) signOut();
     } else if ("jump" in d) {
@@ -362,7 +361,6 @@
       state.anchor = null;
       feedback.textContent = "";
       render();
-      if ("section" in d) scrollToHour(10);
       if (!demoMode && state.section === "group" && !saving) refreshMarks();
     } else if ("step" in d || "date" in d) {
       setDay("step" in d ? state.day + Number(d.step) : Number(d.date));
@@ -468,20 +466,24 @@
     }
   }
 
-  desktop.addEventListener("change", () => {
+  function updateLayout() {
+    const nextCount = fittingDays();
+    if (calendar.hidden || columnCount === nextCount) return;
     const selectedDay = Math.floor(state.start / dayHours);
-    if (selectedDay >= state.day + visibleDays()) {
+    if (selectedDay >= state.day + nextCount) {
       state.start = state.day * dayHours + state.start % dayHours;
       state.duration = 1;
     }
     state.anchor = null;
+    drag = null;
     render();
-  });
+  }
+  new ResizeObserver(updateLayout).observe(hoursPane);
+  mobile.addEventListener("change", updateLayout);
   renderPeople();
   render();
   if (demoMode) {
     sessionNote.textContent = "Вы отмечаете как " + people[viewer] + ". Нажмите на другое имя, чтобы сменить участника.";
-    scrollToHour(10);
   }
   else load();
 })();

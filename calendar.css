@@ -26,7 +26,7 @@
 #november-calendars :is(button,input,select):focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 #november-calendars .tabs, #november-calendars .people, #november-calendars .tools, #november-calendars .filters, #november-calendars .answers { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
 #november-calendars .tabs button[aria-pressed="true"], #november-calendars .people button[aria-pressed="true"] { background: var(--lilac); }
-#november-calendars .planner { background: #f7f8fc; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+#november-calendars .planner { background: #f7f8fc; border: 1px solid var(--line); border-radius: 18px; overflow: clip; }
 #november-calendars .top { padding: 16px clamp(10px, 3vw, 22px); background: #f1ebfa; border-bottom: 1px solid var(--line); }
 #november-calendars .top p, #november-calendars .calendar-heading > span, #november-calendars .feedback { color: var(--subtle); font-size: 13px; }
 #november-calendars .tabs { margin-top: 10px; }
@@ -53,19 +53,13 @@
 #november-calendars [data-status="4"] { --tone: var(--unsure); }
 #november-calendars [data-status="5"] { --tone: var(--busy); }
 #november-calendars [data-status] { background: var(--tone, var(--paper)); }
-#november-calendars .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+#november-calendars .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; }
 #november-calendars .calendar, #november-calendars .windows { min-width: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 13px; }
 #november-calendars .calendar-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 3px 8px; padding: 9px 10px; }
-#november-calendars .hours { max-height: 386px; overflow-y: auto; overscroll-behavior-y: auto; scrollbar-color: #a594c5 #eee9f5; scrollbar-width: thin; }
 #november-calendars .hour-grid { display: grid; grid-template-columns: 48px repeat(var(--columns), minmax(0, 1fr)); gap: 4px; padding: 0 7px 8px; }
-#november-calendars [data-columns="1"] { --columns: 1; }
-#november-calendars [data-columns="2"] { --columns: 2; }
-#november-calendars [data-columns="3"] { --columns: 3; }
-#november-calendars [data-columns="4"] { --columns: 4; }
-#november-calendars [data-columns="5"] { --columns: 5; }
 #november-calendars .grid-label { padding: 5px 1px; background: var(--paper); font-size: 13px; text-align: center; }
 #november-calendars .grid-label { position: sticky; top: 0; z-index: 1; }
-#november-calendars .hour-label { align-self: center; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--subtle); }
+#november-calendars .hour-label { align-self: center; scroll-margin-top: 36px; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--subtle); }
 #november-calendars .hours button { min-height: 34px; padding: 4px 2px; font-variant-numeric: tabular-nums; }
 #november-calendars .hours [data-preview] { box-shadow: inset 0 0 0 2px var(--accent); }
 #november-calendars [data-edit] { user-select: none; }
@@ -78,10 +72,9 @@
 #november-calendars .window-list { display: grid; gap: 5px; list-style: none; padding: 0; margin: 0; }
 #november-calendars .window-list button { display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; text-align: left; gap: 2px 5px; background: #f6f2fc; }
 #november-calendars .window-list button span { color: var(--subtle); font-size: 13px; }
-#november-calendars .details:not(:empty), #november-calendars .feedback:not(:empty) { margin-top: 10px; }
+#november-calendars .details:not(:empty) { margin-bottom: 10px; }
+#november-calendars .feedback:not(:empty) { margin-top: 10px; }
 #november-calendars .answers { margin-top: 5px; }
-@media (min-width: 690px) {
-}
 @media (max-width: 460px) {
   #november-calendars .date-nav { grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 3px; }
   #november-calendars .hour-grid { grid-template-columns: 40px repeat(var(--columns), minmax(0, 1fr)); gap: 3px; }
@@ -91,7 +84,7 @@
   #november-calendars button, #november-calendars .tools button, #november-calendars .hours button { min-height: 44px; }
 }
 
-body:has(#november-calendars) { margin: 12px auto; max-width: 1040px; padding: 0 8px; }
+body:has(#november-calendars) { margin: 12px auto; padding: 0 clamp(8px, 1.5vw, 24px); }
 #november-calendars .identity { padding: 10px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 12px; background: #f0ebf9; }
 #november-calendars .identity h3 { margin-bottom: 7px; }
 #november-calendars .identity form { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: end; gap: 7px; }
@@ -100,6 +93,12 @@ body:has(#november-calendars) { margin: 12px auto; max-width: 1040px; padding: 0
 #november-calendars .quick-hours { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 5px; }
 #november-calendars .quick-hours button { min-height: 32px; font-size: 13px; }
 #november-calendars .quick-hours span { color: var(--subtle); font-size: 13px; margin-inline-start: 4px; }
-@media (min-width: 760px) {
-  #november-calendars [data-section-mode="group"] .workspace { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+#november-calendars .workspace:has(.windows:not([hidden])) { grid-template-areas: "windows" "calendar"; }
+#november-calendars .workspace:has(.windows:not([hidden])) .calendar { grid-area: calendar; }
+#november-calendars .workspace:has(.windows:not([hidden])) .windows { grid-area: windows; }
+@media (min-width: 1060px) {
+  #november-calendars .workspace:has(.windows:not([hidden])) {
+    grid-template-areas: "calendar windows";
+    grid-template-columns: minmax(0, 1fr) clamp(250px, 24vw, 320px);
+  }
 }
